@@ -1,0 +1,8 @@
+@font-face {
+    font-family: PingFang SC;
+    src: url("fonts/chText.ttf") format("truetype");
+}
+
+.text {
+    color: #c2c2c2;
+}

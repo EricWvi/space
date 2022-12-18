@@ -1,0 +1,168 @@
+.login-container {
+    display: flex;
+    height: 100%;
+}
+
+.content {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.content > main {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+.b-10 {
+    height: 10%;
+}
+
+.b-20 {
+    height: 20%;
+}
+
+.auth-nav {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-grow: 0;
+    padding: 30px 30px 0;
+}
+
+.auth-link {
+    font-size: 14px;
+}
+
+.side-image-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 514px;
+    flex-grow: 0;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: cover;
+}
+
+.side-image-container > header {
+    color: white;
+    padding: 64px 64px 30px;
+    line-height: 1.15;
+    font-size: 64px;
+    font-family: "SF Pro SC","SF Pro Display","SF Pro Icons","PingFang SC","Helvetica Neue","Helvetica","Arial",sans-serif;
+}
+
+.auth-logo {
+    width: 70px;
+    display: block;
+    position: relative;
+    left: -15px;
+    margin-bottom: 20px;
+}
+
+input.text-input {
+    width: 100%;
+    margin-right: 8px;
+    border: 1px solid transparent;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 40px;
+    padding: 10px 16px;
+    outline: none;
+    border-radius: 8px;
+    transition: background-color 200ms ease, outline 200ms ease, color 200ms ease, box-shadow 200ms ease;
+    appearance: none;
+    color: #0d0c22;
+    background-color: #f3f3f4;
+}
+
+input.text-input:hover, input.text-input:focus {
+    background-color: #fff;
+    border-color: rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 4px rgba(125, 76, 219, 0.1);
+}
+
+input.text-input:focus {
+    border-color: rgba(125, 76, 219, 0.4);
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 16px;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    background: #7D4CDB;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.06);
+    transition: color 200ms ease;
+    border-radius: 8px;
+    appearance: none;
+    position: relative;
+    outline: none;
+    font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    height: 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.button:hover {
+    background-color: #9a65fa;
+}
+
+.button:active {
+    background-color: #6c42bc;
+}
+
+.login-panel {
+    padding: 30px 60px 0;
+    margin: 0;
+    max-width: 416px;
+    width: 100%;
+}
+
+.login-panel p {
+    display: block;
+    font: bold 15px/24px "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 14px 0 4px;
+}
+
+.login-panel h2 {
+    font: bold 24px/29px "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin-bottom: 26px;
+}
+
+.login-panel form fieldset {
+    margin: 0 0 12px;
+    border: none;
+}
+
+.login-panel a {
+    color: #4f3cc9;
+    text-decoration: none;
+}
+
+label.password a {
+    font-weight: normal;
+    float: right;
+    position: relative;
+    top: 2px;
+    font-size: 14px;
+}
+
+.login-panel button {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    max-width: 200px;
+    color: white;
+}
+
