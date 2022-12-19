@@ -1,0 +1,21 @@
+.add-button {
+    opacity:0;
+    transition: all 0.5s;
+}
+
+.add-button:hover {
+    opacity:1;
+}
+
+.edit-button {
+    opacity:0;
+    transition: all 0.5s;
+}
+
+.edit-button:hover {
+    opacity:1;
+}
+
+.hide {
+    visibility: hidden;
+}
