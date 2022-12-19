@@ -35,7 +35,9 @@ const router = createBrowserRouter([
         path: "/files",
         element: <FileSystem />,
     },
-]);
+], {
+    basename: "/space",
+});
 
 let colorScheme = AntTheme.defaultAlgorithm
 if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
