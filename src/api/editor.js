@@ -9,7 +9,7 @@ export const AtomType = {
 
 export function addAtom({ sid, content, name, type, docId, prevId }, callback) {
   ajaxPost(
-    "/editor?Action=AddAtom",
+    "/space/editor?Action=AddAtom",
     {
       sid,
       content,
@@ -24,7 +24,7 @@ export function addAtom({ sid, content, name, type, docId, prevId }, callback) {
 
 export function addDoc({ title, collectionId }, callback) {
   ajaxPost(
-    "/editor?Action=AddDoc",
+    "/space/editor?Action=AddDoc",
     {
       title,
       collectionId,
@@ -35,7 +35,7 @@ export function addDoc({ title, collectionId }, callback) {
 
 export function getCollectionDocs(collectionId, callback) {
   ajaxPost(
-    "/editor?Action=GetCollectionDocs",
+    "/space/editor?Action=GetCollectionDocs",
     {
       collectionId,
     },
@@ -44,12 +44,12 @@ export function getCollectionDocs(collectionId, callback) {
 }
 
 export function getCollections(callback) {
-  ajaxGet("/editor?Action=GetCollections", callback);
+  ajaxGet("/space/editor?Action=GetCollections", callback);
 }
 
 export function getDocAtoms(docId, callback) {
   ajaxPost(
-    "/editor?Action=GetDocAtoms",
+    "/space/editor?Action=GetDocAtoms",
     {
       docId,
     },
@@ -62,7 +62,7 @@ export function insertAtom(
   callback
 ) {
   ajaxPost(
-    "/editor?Action=InsertAtom",
+    "/space/editor?Action=InsertAtom",
     {
       content,
       name,
