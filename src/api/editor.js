@@ -33,6 +33,17 @@ export function addDoc({ title, collectionId }, callback) {
   );
 }
 
+export function deleteAtom(sid, nextId, callback) {
+  ajaxPost(
+    "/space/editor?Action=DeleteAtom",
+    {
+      sid,
+      nextId,
+    },
+    callback
+  );
+}
+
 export function getCollectionDocs(collectionId, callback) {
   ajaxPost(
     "/space/editor?Action=GetCollectionDocs",
@@ -47,11 +58,16 @@ export function getCollections(callback) {
   ajaxGet("/space/editor?Action=GetCollections", callback);
 }
 
-export function getDocAtoms(docId, callback) {
+export function getDoc(docId, callback) {
+  ajaxPost("/space/editor?Action=GetDoc", { docId }, callback);
+}
+
+export function getDocAtoms(docId, version, callback) {
   ajaxPost(
     "/space/editor?Action=GetDocAtoms",
     {
       docId,
+      version,
     },
     callback
   );
@@ -73,4 +89,8 @@ export function insertAtom(
     },
     callback
   );
+}
+
+export function sortAtoms(atoms, callback) {
+  ajaxPost("/space/editor?Action=SortAtoms", { atoms }, callback);
 }

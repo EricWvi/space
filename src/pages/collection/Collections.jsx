@@ -16,7 +16,7 @@ export default function Collections() {
     <>
       <ul>
         {collections.map((i) => (
-          <li>
+          <li key={i.sid}>
             <Link to={`/doc/${i.sid}`}>{i.name}</Link>
           </li>
         ))}

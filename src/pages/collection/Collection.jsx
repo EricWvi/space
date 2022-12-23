@@ -19,7 +19,7 @@ export default function Collection() {
     <>
       <ul>
         {docs.map((i) => (
-          <li>
+          <li key={i.sid}>
             <Link to={`/doc/${colId}/${i.sid}`}>{i.title}</Link>
           </li>
         ))}

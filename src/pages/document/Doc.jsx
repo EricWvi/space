@@ -1,63 +1,83 @@
 import { useParams } from "react-router-dom";
-import { createContext, useContext, useEffect, useState } from "react";
-import { addAtom, getDocAtoms, insertAtom } from "../../api/editor.js";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
+import { getDocAtoms, insertAtom } from "../../api/editor.js";
 import { Editor, Text } from "./Text";
 import { PlusSquareFilled } from "@ant-design/icons";
+import "./Document.css";
+import PropTypes from "prop-types";
+import {
+  atomsReducer,
+  initAction,
+  insertAtomAction,
+  reorder,
+} from "./reducer.js";
+import History from "./History";
+import DocDragDrop from "./DocDragDrop";
 
 export const EditContext = createContext(null);
-export const AtomContext = createContext(null);
-export const FirstSidContext = createContext(null);
+export const HistoryContext = createContext(null);
+export const DispatchContext = createContext(null);
 
 export default function Doc() {
   const { colId, docId } = useParams();
-  const [atoms, setAtoms] = useState([]);
-  const [firstSid, setFirstSid] = useState("");
+  const [atoms, dispatch] = useReducer(atomsReducer, []);
   const [globalEdit, setGlobalEdit] = useState(false);
+  const [historyMode, setHistoryMode] = useState(false);
+  let firstSid = "";
+  if (atoms.length !== 0) {
+    firstSid = atoms[0].sid;
+  }
 
   useEffect(() => {
-    getDocAtoms(docId, (msg) => {
-      setAtoms(msg.atoms);
-      if (msg.atoms.length !== 0) {
-        setFirstSid(msg.atoms[0].sid);
-      }
+    getDocAtoms(docId, 0, (msg) => {
+      dispatch(initAction(msg.atoms));
     });
   }, []);
 
   return (
-    <FirstSidContext.Provider value={{ firstSid, setFirstSid }}>
-      <AtomContext.Provider value={{ atoms, setAtoms }}>
-        <EditContext.Provider value={{ globalEdit, setGlobalEdit }}>
-          <AddIcon prev={""} next={firstSid} index={0} />
-          <>
-            {atoms.map((item, index) => {
-              let next = "";
-              if (index < atoms.length - 1) {
-                next = atoms[index + 1].sid;
-              }
-              return (
-                <div key={index}>
-                  <Text atom={item} />
-                  <AddIcon
-                    prev={atoms[index].sid}
-                    next={next}
-                    index={index + 1}
-                  />
-                </div>
-              );
-            })}
-          </>
-        </EditContext.Provider>
-      </AtomContext.Provider>
-    </FirstSidContext.Provider>
+    <DispatchContext.Provider value={{ atoms, dispatch }}>
+      <EditContext.Provider value={{ globalEdit, setGlobalEdit }}>
+        <HistoryContext.Provider value={{ historyMode, setHistoryMode }}>
+          <History docId={docId} />
+          {historyMode ? (
+            <>
+              {atoms.map((item, index) => (
+                <Text key={index} atom={item} readonly={true} />
+              ))}
+            </>
+          ) : (
+            <>
+              <div style={{ margin: "0 8px" }}>
+                <AddIcon prev={""} next={firstSid} index={0} />
+              </div>
+              <DocDragDrop />
+            </>
+          )}
+        </HistoryContext.Provider>
+      </EditContext.Provider>
+    </DispatchContext.Provider>
   );
 }
 
-function AddIcon({ prev, next, index }) {
+AddIcon.propType = {
+  prev: PropTypes.string,
+  next: PropTypes.string,
+  index: PropTypes.number,
+};
+
+export function AddIcon(props) {
+  const { prev, next, index } = props;
+
   const { docId } = useParams();
   const [display, setDisplay] = useState(false);
   const { globalEdit, setGlobalEdit } = useContext(EditContext);
-  const { atoms, setAtoms } = useContext(AtomContext);
-  const { setFirstSid } = useContext(FirstSidContext);
+  const { dispatch } = useContext(DispatchContext);
 
   const onClick = () => {
     setDisplay(true);
@@ -77,14 +97,7 @@ function AddIcon({ prev, next, index }) {
     };
     insertAtom({ nextId: next, ...atom }, (msg) => {
       atom.sid = msg.sid;
-      if (index !== atoms.length) {
-        atoms[index].prevId = atom.sid;
-      }
-      if (index === 0) {
-        setFirstSid(atom.sid);
-      }
-      atoms.splice(index, 0, atom);
-      setAtoms([...atoms]);
+      dispatch(insertAtomAction(index, atom));
     });
   };
 

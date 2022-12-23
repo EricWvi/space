@@ -1,37 +1,26 @@
-import { useContext, useEffect, useState } from "react";
-import { Button } from "antd";
-import { EditFilled } from "@ant-design/icons";
-import { addAtom } from "../../api/editor.js";
-import { EditContext } from "./Doc.jsx";
+import { useContext, useEffect, useRef, useState } from "react";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
+import { addAtom, deleteAtom } from "../../api/editor.js";
+import { DispatchContext, EditContext } from "./Doc.jsx";
 import "./Document.css";
+import PropTypes from "prop-types";
+import { deleteAtomAction, editAtomAction } from "./reducer.js";
 
-export function Text({ atom }) {
+export function Text({ atom, readonly }) {
   const [edit, setEdit] = useState(false);
-  const [content, setContent] = useState(atom.content);
-
-  useEffect(() => {
-    setContent(atom.content);
-  }, [atom]);
-
   const { globalEdit, setGlobalEdit } = useContext(EditContext);
+  const { atoms, dispatch } = useContext(DispatchContext);
 
-  const onSave = (c, hasChange) => {
-    setContent(c);
+  const onSave = (c) => {
     setEdit(false);
     setGlobalEdit(false);
-    if (hasChange) {
-      addAtom(
-        {
-          sid: atom.sid,
-          content: c,
-          name: atom.name,
-          type: atom.type,
-          docId: atom.docId,
-          prevId: atom.prevId,
-        },
-        () => {}
-      );
-    }
+    const newAtom = {
+      ...atom,
+      content: c,
+    };
+    addAtom(newAtom, () => {
+      dispatch(editAtomAction(newAtom));
+    });
   };
 
   const onCancel = () => {
@@ -45,51 +34,84 @@ export function Text({ atom }) {
   return (
     <>
       {edit ? (
-        <Editor content={content} onSave={onSave} onCancel={onCancel} />
+        <Editor content={atom.content} onSave={onSave} onCancel={onCancel} />
       ) : (
-        <div>
-          <EditFilled
-            className={classes}
-            onClick={() => {
-              setEdit(true);
-              setGlobalEdit(true);
-            }}
-          />
-          {content}
+        <div style={{ whiteSpace: "break-spaces" }}>
+          {!readonly && (
+            <>
+              <DeleteFilled
+                className={classes}
+                onClick={() => {
+                  const i = atoms.findIndex((a) => a.sid === atom.sid);
+                  let next = "";
+                  if (undefined !== atoms[i + 1]) {
+                    next = atoms[i + 1].sid;
+                  }
+                  deleteAtom(atom.sid, next, () => {
+                    dispatch(deleteAtomAction(i, next));
+                  });
+                }}
+              />
+              <EditFilled
+                className={classes}
+                onClick={() => {
+                  setEdit(true);
+                  setGlobalEdit(true);
+                }}
+              />
+            </>
+          )}
+          {atom.content}
         </div>
       )}
     </>
   );
 }
 
-export function Editor({ content, onSave, onCancel }) {
+Editor.propTypes = {
+  content: PropTypes.string,
+  onSave: PropTypes.func,
+  onCancel: PropTypes.func,
+};
+
+export function Editor(props) {
+  const { content, onSave, onCancel } = props;
+
   const [c, setC] = useState(content);
+  const taRef = useRef(null);
+  useEffect(() => {
+    taRef.current.focus();
+  }, [taRef]);
 
   const handleChange = (event) => {
     setC(event.target.value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      if (content !== c) {
+        onSave(c);
+      } else {
+        onCancel();
+      }
+    }
+  };
+
+  const handleNotFocus = () => {
+    onCancel();
   };
 
   return (
     <>
       <textarea
         name="text"
+        ref={taRef}
+        onBlur={handleNotFocus}
         style={{ display: "block", fontSize: 16 }}
+        onKeyDown={handleKeyDown}
         onChange={handleChange}
         value={c}
       ></textarea>
-      <Button
-        onClick={() => {
-          if (content === c) {
-            onSave(c, false);
-          } else {
-            onSave(c, true);
-          }
-        }}
-      >
-        Ok
-      </Button>
-      <Button onClick={onCancel}>Cancel</Button>
-      <br />
     </>
   );
 }

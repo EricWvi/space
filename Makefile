@@ -10,7 +10,7 @@
 #	mv dist /home/test/space/front-deploy
 #	cd /home/test/space/front-deploy;node app.js &
 
-PROD_DIR = /Users/wangyi/Documents/PersonalFile/Git/deploy/space/back
+PROD_DIR = $(CODE_DIR)/deploy/space/back
 
 deploy: FORCE
 	npm run build
