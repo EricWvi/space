@@ -73,7 +73,7 @@ export function atomsReducer(atoms, action) {
       result = Array.from(atoms);
       result.splice(action.index, 0, action.atom);
       return result.map((a, i) => {
-        if (action.index === i) {
+        if (action.index + 1 === i) {
           a.prevId = action.atom.sid;
         }
         return a;

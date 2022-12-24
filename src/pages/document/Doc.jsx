@@ -114,7 +114,17 @@ export function AddIcon(props) {
       {display ? (
         <Editor onSave={onSave} onCancel={onCancel} />
       ) : (
-        <PlusSquareFilled className={classes} onClick={onClick} />
+        <>
+          <PlusSquareFilled className={classes} onClick={onClick} />
+          {"   "}
+          {import.meta.env.MODE === "development" && (
+            <code style={{ border: "1px solid" }}>{"prev:" + prev}</code>
+          )}
+          {"   "}
+          {import.meta.env.MODE === "development" && (
+            <code style={{ border: "1px solid" }}>{"next:" + next}</code>
+          )}
+        </>
       )}
     </>
   );

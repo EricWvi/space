@@ -62,6 +62,14 @@ export function Text({ atom, readonly }) {
             </>
           )}
           {atom.content}
+          {"   "}
+          {import.meta.env.MODE === "development" && (
+            <code style={{ border: "1px solid" }}>{"sid:" + atom.sid}</code>
+          )}
+          {"   "}
+          {import.meta.env.MODE === "development" && (
+            <code style={{ border: "1px solid" }}>{"prev:" + atom.prevId}</code>
+          )}
         </div>
       )}
     </>
