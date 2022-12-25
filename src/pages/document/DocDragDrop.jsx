@@ -1,8 +1,8 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { Text } from "./Text.jsx";
 import { reorder } from "./reducer.js";
 import { AddIcon, DispatchContext } from "./Doc.jsx";
 import { useContext } from "react";
+import Atom from "./Atom";
 
 export default function DocDragDrop() {
   const { atoms, dispatch } = useContext(DispatchContext);
@@ -64,7 +64,7 @@ export default function DocDragDrop() {
                           provided.draggableProps.style
                         )}
                       >
-                        <Text atom={item} readonly={false} />
+                        <Atom atom={item} />
                         <AddIcon
                           prev={atoms[index].sid}
                           next={next}

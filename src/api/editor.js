@@ -1,10 +1,21 @@
 import { ajaxGet, ajaxPost } from "./ajax";
 
 export const AtomType = {
-  Text: 1,
-  Image: 2,
-  Audio: 3,
-  Video: 4,
+  Text: "text",
+  Image: "image",
+};
+
+export const NewAtom = (docId, type, prevId) => {
+  return {
+    sid: "",
+    docId,
+    type,
+    prevId,
+    link: "",
+    content: "",
+    name: "",
+    version: 0,
+  };
 };
 
 export function addAtom({ sid, content, name, type, docId, prevId }, callback) {

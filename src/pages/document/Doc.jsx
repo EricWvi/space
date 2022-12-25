@@ -6,19 +6,19 @@ import {
   useReducer,
   useState,
 } from "react";
-import { getDocAtoms, insertAtom } from "../../api/editor.js";
-import { Editor, Text } from "./Text";
-import { PlusSquareFilled } from "@ant-design/icons";
+import { AtomType, getDocAtoms, insertAtom } from "../../api/editor.js";
+import {
+  FileImageOutlined,
+  FileTextOutlined,
+  PlusSquareFilled,
+} from "@ant-design/icons";
 import "./Document.css";
 import PropTypes from "prop-types";
-import {
-  atomsReducer,
-  initAction,
-  insertAtomAction,
-  reorder,
-} from "./reducer.js";
+import { atomsReducer, initAction, insertAtomAction } from "./reducer.js";
 import History from "./History";
 import DocDragDrop from "./DocDragDrop";
+import { Modal, Popover } from "antd";
+import Atom, { AtomEditor } from "./Atom";
 
 export const EditContext = createContext(null);
 export const HistoryContext = createContext(null);
@@ -48,7 +48,7 @@ export default function Doc() {
           {historyMode ? (
             <>
               {atoms.map((item, index) => (
-                <Text key={index} atom={item} readonly={true} />
+                <Atom key={index} atom={item} readonly={true} />
               ))}
             </>
           ) : (
@@ -73,28 +73,54 @@ AddIcon.propType = {
 
 export function AddIcon(props) {
   const { prev, next, index } = props;
-
-  const { docId } = useParams();
   const [display, setDisplay] = useState(false);
   const { globalEdit, setGlobalEdit } = useContext(EditContext);
   const { dispatch } = useContext(DispatchContext);
+  const [newAtomType, setNewAtomType] = useState(AtomType.Text);
+  const [pop, setPop] = useState(false);
+  const modalInit = {
+    open: false,
+    title: "",
+    ok: () => {},
+    cancel: () => {},
+    children: <></>,
+  };
+  const [modal, setModal] = useState(modalInit);
 
-  const onClick = () => {
-    setDisplay(true);
+  const onClick = (type) => {
     setGlobalEdit(true);
+    showEditor(type);
   };
 
-  const onSave = (content) => {
+  const showEditor = (type) => {
+    switch (type) {
+      case AtomType.Text:
+        setDisplay(true);
+        setNewAtomType(type);
+        break;
+      case AtomType.Image:
+        setModal({
+          open: true,
+          title: "Add image",
+          ok: () => {
+            setModal(modalInit);
+            onCancel();
+          },
+          cancel: () => {
+            setModal(modalInit);
+            onCancel();
+          },
+          children: <></>,
+        });
+        break;
+      default:
+        break;
+    }
+  };
+
+  const onSave = (atom) => {
     setDisplay(false);
     setGlobalEdit(false);
-    let atom = {
-      sid: "",
-      docId: docId,
-      type: "text",
-      prevId: prev,
-      content,
-      name: "",
-    };
     insertAtom({ nextId: next, ...atom }, (msg) => {
       atom.sid = msg.sid;
       dispatch(insertAtomAction(index, atom));
@@ -109,13 +135,55 @@ export function AddIcon(props) {
   const hide = globalEdit ? "hide" : "";
   const classes = `add-button ${hide}`;
 
+  const optionClass = { marginLeft: "10px", fontSize: 18 };
+
+  const atomOptions = (
+    <div
+      style={{
+        display: "flex",
+        padding: "0 10px",
+        height: 40,
+        alignItems: "center",
+      }}
+    >
+      <FileTextOutlined
+        style={optionClass}
+        onClick={() => {
+          onClick(AtomType.Text);
+        }}
+      />
+      <FileImageOutlined
+        style={optionClass}
+        onClick={() => {
+          setPop(false);
+          onClick(AtomType.Image);
+        }}
+      />
+    </div>
+  );
+
   return (
     <>
       {display ? (
-        <Editor onSave={onSave} onCancel={onCancel} />
+        <AtomEditor
+          prevId={prev}
+          type={newAtomType}
+          onSave={onSave}
+          onCancel={onCancel}
+        />
       ) : (
         <>
-          <PlusSquareFilled className={classes} onClick={onClick} />
+          <Popover
+            open={pop}
+            onOpenChange={(newOpen) => setPop(newOpen)}
+            placement="right"
+            title={"Atom Type"}
+            content={atomOptions}
+            trigger="click"
+          >
+            <PlusSquareFilled className={classes} />
+          </Popover>
+          <AddModal modal={modal} />
           {"   "}
           {import.meta.env.MODE === "development" && (
             <code style={{ border: "1px solid" }}>{"prev:" + prev}</code>
@@ -126,6 +194,35 @@ export function AddIcon(props) {
           )}
         </>
       )}
+    </>
+  );
+}
+
+function AddModal({ modal }) {
+  const { open, title, ok, cancel, children } = modal;
+  const handleOk = () => {
+    // setConfirmLoading(true);
+    setTimeout(() => {
+      setOpen(false);
+      // setConfirmLoading(false);
+    }, 2000);
+  };
+
+  const handleCancel = () => {
+    setOpen(false);
+  };
+
+  return (
+    <>
+      <Modal
+        title={title}
+        open={open}
+        onOk={ok}
+        // confirmLoading={confirmLoading}
+        onCancel={cancel}
+      >
+        {children}
+      </Modal>
     </>
   );
 }

@@ -1,75 +1,16 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { DeleteFilled, EditFilled } from "@ant-design/icons";
-import { addAtom, deleteAtom } from "../../api/editor.js";
-import { DispatchContext, EditContext } from "./Doc.jsx";
-import "./Document.css";
+import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
-import { deleteAtomAction, editAtomAction } from "./reducer.js";
 
-export function Text({ atom, readonly }) {
-  const [edit, setEdit] = useState(false);
-  const { globalEdit, setGlobalEdit } = useContext(EditContext);
-  const { atoms, dispatch } = useContext(DispatchContext);
-
-  const onSave = (c) => {
-    setEdit(false);
-    setGlobalEdit(false);
-    const newAtom = {
-      ...atom,
-      content: c,
-    };
-    addAtom(newAtom, () => {
-      dispatch(editAtomAction(newAtom));
-    });
-  };
-
-  const onCancel = () => {
-    setEdit(false);
-    setGlobalEdit(false);
-  };
-
-  const hide = globalEdit ? "hide" : "";
-  const classes = `edit-button ${hide}`;
+export function Text(props) {
+  const { atom, edit, onSave, onCancel } = props;
 
   return (
     <>
       {edit ? (
-        <Editor content={atom.content} onSave={onSave} onCancel={onCancel} />
+        <Editor atom={atom} onSave={onSave} onCancel={onCancel} />
       ) : (
-        <div style={{ whiteSpace: "break-spaces" }}>
-          {!readonly && (
-            <>
-              <DeleteFilled
-                className={classes}
-                onClick={() => {
-                  const i = atoms.findIndex((a) => a.sid === atom.sid);
-                  let next = "";
-                  if (undefined !== atoms[i + 1]) {
-                    next = atoms[i + 1].sid;
-                  }
-                  deleteAtom(atom.sid, next, () => {
-                    dispatch(deleteAtomAction(i, next));
-                  });
-                }}
-              />
-              <EditFilled
-                className={classes}
-                onClick={() => {
-                  setEdit(true);
-                  setGlobalEdit(true);
-                }}
-              />
-            </>
-          )}
+        <div style={{ whiteSpace: "break-spaces", display: "inline" }}>
           {atom.content}
-          {"   "}
-          {import.meta.env.MODE === "development" && (
-            <code style={{ border: "1px solid" }}>{"sid:" + atom.sid}</code>
-          )}
-          {"   "}
-          {import.meta.env.MODE === "development" && (
-            <code style={{ border: "1px solid" }}>{"prev:" + atom.prevId}</code>
-          )}
         </div>
       )}
     </>
@@ -83,9 +24,9 @@ Editor.propTypes = {
 };
 
 export function Editor(props) {
-  const { content, onSave, onCancel } = props;
+  const { atom, onSave, onCancel } = props;
 
-  const [c, setC] = useState(content);
+  const [c, setC] = useState(atom.content);
   const taRef = useRef(null);
   useEffect(() => {
     taRef.current.focus();
@@ -97,8 +38,11 @@ export function Editor(props) {
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      if (content !== c) {
-        onSave(c);
+      if (atom.content !== c) {
+        onSave({
+          ...atom,
+          content: c,
+        });
       } else {
         onCancel();
       }
