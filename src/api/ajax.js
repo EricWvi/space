@@ -1,10 +1,11 @@
 import axios from "axios";
 import { message } from "antd";
 
-export function ajaxPost(url, data, callback) {
+export function ajaxPost(url, data, callback, headers = {}) {
   axios
     .post("/api" + url, data, {
       headers: {
+        ...headers,
         "x-api-key": localStorage.getItem("token"),
       },
     })

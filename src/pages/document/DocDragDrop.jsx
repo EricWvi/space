@@ -1,8 +1,9 @@
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { reorder } from "./reducer.js";
-import { AddIcon, DispatchContext } from "./Doc.jsx";
+import { DispatchContext } from "./Doc.jsx";
 import { useContext } from "react";
 import Atom from "./Atom";
+import { AddIcon } from "./Add.jsx";
 
 export default function DocDragDrop() {
   const { atoms, dispatch } = useContext(DispatchContext);
